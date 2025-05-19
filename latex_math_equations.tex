@@ -1,0 +1,274 @@
+% \documentclass[11pt]{article}
+%\documentclass[multi={mymath}, border=1pt]{standalone}
+\documentclass[multi={mymath},border=1pt,convert={convertexe={convert},density=300,size=800x800,outext=.png}]{standalone}
+\newenvironment{mymath}{$\displaystyle}{$}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{amscd}
+\usepackage{mathrsfs}
+\usepackage{verbatim}           
+\usepackage{enumerate}
+
+%%%%%% BASIC NOTATIONS %%%%%%
+
+% 1. Number fields
+\def\N{{\mathbb N}}
+\def\Z{{\mathbb Z}}
+\def\R{{\mathbb R}}
+\def\C{{\mathbb C}}
+\def\Rplus{{\mathbb{R}_+}}
+
+% 2. Function spaces
+\def\L2{{L^2(\mathbb{R})}}
+
+% 2. Probability
+\def\Pb{{\mathbb{P}}}           % probability measure
+\def\Var{{\mathrm{Var}}}        % variance
+\def\E{{\mathbb{E}}}            % mathematical expectation
+\def\Borel{{\mathscr{B}}}       % Borel algebra
+\def\F{ {\mathcal{F}} }         % sigma algebra
+
+% 3. Symbols
+\def\eps{\varepsilon}
+\def\Cov{ {\textrm{Cov}} }
+\def\Cop{ {\mathcal{C}} }
+\def\I{ {\mathcal{I}} }
+\def\D{ {\mathcal{D}} }
+\def\O{ {\mathcal{O}} }
+\def\U{ {\mathcal{U}} }
+\def\L{ {\mathcal{L}} }
+\def\B{ {\mathcal{B}} }
+\def\G{ {\mathcal{G}} }
+\def\T{ {\mathcal{T}} }
+\def\M{ {\mathcal{M}} }
+\def\S{ {\mathcal{S}} }
+\def\lft{\mathscr{L}}
+\def\astar{ {a^*} }
+\def\Ct{ {\mathcal{C}} }
+\def\Null{ {\mathcal{N}} }
+\def\Norm{ {\mathcal{N}} }
+\def\Range{ {\mathcal{R}} }
+\def\K{ {\mathcal{K}} }
+\def\H{ {\mathcal{H}} }
+\def\bx{ {\boldsymbol x} }
+\def\bp{ {\boldsymbol p} }
+\def\bxi{ {\boldsymbol\xi} }
+\def\bzeta{ {\boldsymbol\zeta} }
+\def\|{{|\!|}}
+\def\ac{{ \,<\!\!<\, }}
+\def\<{{\langle}}
+\def\>{{\rangle}}
+\def\supp{{\mathrm{supp}}}
+\def\yobs{ {y_{\textrm{obs}}} }
+
+\newcommand{\diag}{\operatornamewithlimits{diag}}
+
+
+\begin{document}
+
+% 1. Function
+\begin{mymath}
+  f
+\end{mymath}
+
+% 2. Data
+\begin{mymath}
+  g
+\end{mymath}
+
+% 3. Data pair
+\begin{mymath}
+  (f, g)
+\end{mymath}
+
+% 4. Forward operator
+\begin{mymath} 
+  \T : X \rightarrow Y
+\end{mymath}
+
+% 4b. Forward operator on functions
+\begin{mymath} 
+  \T : f \mapsto g
+\end{mymath}
+
+% 5. Forward operator data
+\begin{mymath} 
+  g = \T(f_{\textrm{true}}) + \delta g
+\end{mymath}
+
+% 6. Loss function
+\begin{mymath}
+\L : Y \times Y \rightarrow \R
+\end{mymath}
+
+% 7. Example loss
+\begin{mymath}
+\L(\T(f), g) = \| \T(f) - g \|^2_2
+\end{mymath}
+
+% 8. Regularizer
+\begin{mymath}
+  \S : X \rightarrow \R
+\end{mymath}
+
+% 9. Example regularizer
+\begin{mymath}
+  \S(f) = \| f \|_{TV} = \| |\nabla f| \|_1
+\end{mymath}
+
+% 10. Minimization problem
+\begin{mymath}
+  \min_{f \in X} \left[ \L(\T(f), g) + \lambda \S(f) \right] \textrm{ for a fixed } \lambda \ge 0
+\end{mymath}
+
+% 11. Prior distribution
+\begin{mymath}
+p(f) = \exp\left( -\lambda \S(f) \right)
+\end{mymath}
+
+% 12. Likelihood
+\begin{mymath}
+p(g | f) = \exp\left( -\L(\T(f), g) \right)
+\end{mymath}
+
+% 13. Posterior distribution
+\begin{mymath}
+p(f | g) \propto p(g | f) p(f)
+\end{mymath}
+
+% 14. Radon transform example
+\begin{mymath}
+  Rf(t, \omega) = \int_{\R} f(t \omega + s \omega^{\perp}) \, ds
+\end{mymath}
+
+% 15. Radon transform inversion
+\begin{mymath}
+  f(x) = \frac{1}{4 \pi^2} \int_0^{\pi} \int_{\R} e^{ir\<x, \omega\>} \widetilde{Rf}(r, \omega) |r| \,dr \,d\omega
+\end{mymath}
+
+% 16. Inverse mapping
+\begin{mymath}
+\T^{-1} : g \mapsto f
+\end{mymath}
+
+% 17. Sampling manifold
+\begin{mymath}
+f \in \M
+\end{mymath}
+
+% 18. Sampling manifold
+\begin{mymath}
+(f, g) \in \M \times \T(\M)
+\end{mymath}
+
+% 19. Restricted inverse
+\begin{mymath}
+\T_{\M}^{-1} : g \mapsto f \in \M
+\end{mymath}
+
+
+% Information theory equations
+% 20. Prior over weights
+\begin{mymath}
+\pi (w) = \textrm{Prior over network weights}
+\end{mymath}
+
+% 21. Variational posterior over weights
+\begin{mymath}
+Q_{\theta} (w) = \textrm{Variational posterior over network weights}
+\end{mymath}
+
+% 22. Likelihood of outputs 
+\begin{mymath}
+P(Y | X, w) = \textrm{Likelihood of output given weights and input}
+\end{mymath}
+
+% 23. Likelihood of data
+\begin{mymath}
+P(D | w) = P(Y, X | w) = P(Y | X, w) P(X)
+\end{mymath}
+
+% 24. Information function
+\begin{mymath}
+I(q)(x) = - \log q(x)
+\end{mymath}
+
+% 25. Entropy 
+\begin{mymath}
+H(q) = \E_q [I(q)] = - \int [\log q(x)] q(x)\,dx
+\end{mymath}
+
+% 26. Cross-entropy
+\begin{mymath}
+H(p, q) = \E_p[I(q)] = - \int [\log q(x)] p(x)\,dx
+\end{mymath}
+
+% 27. KL-divergence
+\begin{mymath}
+D_{KL}(p \| q) = \int \left[ \log \frac{p(x)}{q(x)} \right] p(x)\,dx = H(p, q) - H(p)
+\end{mymath}
+
+% 28. Derive variational free energy
+\begin{mymath}
+D_{KL}(Q_{\theta}(w) \| P(w | D)) = \int \left[ \log \frac{Q_{\theta}(w)}{P(w | D)} \right] Q_{\theta}(w)\,dw
+\end{mymath}
+
+% 29. Derive variational free energy
+\begin{mymath}
+= \int \left[ \log \frac{Q_{\theta}(w)P(D)}{P(w, D)} \right] Q_{\theta}(w)\,dw = \int \left[ \log P(D) \right] Q_{\theta}(w)\,dw - \int \left[ \log \frac{P(w, D)}{Q_{\theta}(w)} \right] Q_{\theta}(w)\,dw
+\end{mymath}
+
+% 30. Derive variational free energy
+\begin{mymath}
+= \log P(D) - \int \left[ \log \frac{P(D | w) \pi(w)}{Q_{\theta}(w)} \right] Q_{\theta}(w)\,dw
+\end{mymath}
+
+% 31. Derive variational free energy
+\begin{mymath}
+= \log P(D) - \int \left[ \log P(D | w) \right] Q_{\theta}(w)\,dw - \int \left[ \log \frac{\pi(w)}{Q_{\theta}(w)} \right] Q_{\theta}(w)\,dw
+\end{mymath}
+
+% 32. Derive variational free energy
+\begin{mymath}
+= \log P(D) - \left\{  \E_{Q_{\theta}(w)}[ \log P(D | w) ] - \int \left[ \log \frac{Q_{\theta}(w)}{\pi(w)} \right] Q_{\theta}(w)\,dw \right\}
+\end{mymath}
+
+% 33. Variational free energy
+\begin{mymath}
+V(Q) = \E_{Q_{\theta}(w)}[ \log P(D | w) ] - D_{KL}(Q_{\theta}(w) \| \pi(w))
+\end{mymath}
+
+% 34. Supervised-learning variational free energy
+\begin{mymath}
+V(\theta) = \int [ \log P(Y | X, w) ] Q_{\theta}(w)\,dw - D_{KL}(Q_{\theta}(w) \| \pi(w))
+\end{mymath}
+
+
+
+
+% and aligned mymaths
+% \begin{mymath}
+% \begin{aligned}
+%   \mu_a &= \mu_b + K (\yobs - \E[H(x_b)]) \\
+%   C_a &= C_b - K \Cov(H(x_b), x_b),
+% \end{aligned}
+% \end{mymath}
+
+\end{document}
+
+
+% % Example equation
+% \begin{equation}
+%   \mu_a = \mu_b + K (\yobs - \E[H(x_b)])
+% \end{equation}
+% % and aligned equations
+% \begin{equation}
+% \begin{aligned}
+%   \mu_a &= \mu_b + K (\yobs - \E[H(x_b)]) \\
+%   C_a &= C_b - K \Cov(H(x_b), x_b),
+% \end{aligned}
+% \end{equation}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

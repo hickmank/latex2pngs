@@ -1,0 +1,213 @@
+\documentclass[multi={mymath},border=1pt]{standalone}
+
+\newenvironment{mymath}{$\displaystyle}{$}
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{verbatim}           
+\usepackage{enumerate}
+\usepackage{amscd}
+
+%%%%%% BASIC NOTATIONS %%%%%%
+
+% 1. Number fields
+\def\N{{\mathbb N}}
+\def\Z{{\mathbb Z}}
+\def\R{{\mathbb R}}
+\def\C{{\mathbb C}}
+\def\Rplus{{\mathbb{R}_+}}
+
+% 2. Function spaces
+\def\L2{{L^2(\mathbb{R})}}
+
+% 2. Probability
+\def\Pb{{\mathbb{P}}}           % probability measure
+\def\Var{{\mathrm{Var}}}        % variance
+\def\E{{\mathbb{E}}}            % mathematical expectation
+\def\Borel{{\mathscr{B}}}       % Borel algebra
+\def\F{ {\mathcal{F}} }         % sigma algebra
+
+% 3. Symbols
+\def\eps{\varepsilon}
+\def\Cov{ {\textrm{Cov}} }
+\def\Cop{ {\mathcal{C}} }
+\def\I{ {\mathcal{I}} }
+\def\D{ {\mathcal{D}} }
+\def\O{ {\mathcal{O}} }
+\def\U{ {\mathcal{U}} }
+\def\lft{\mathscr{L}}
+\def\astar{ {a^*} }
+\def\Ct{ {\mathcal{C}} }
+\def\Null{ {\mathcal{N}} }
+\def\Norm{ {\mathcal{N}} }
+\def\Range{ {\mathcal{R}} }
+\def\K{ {\mathcal{K}} }
+\def\H{ {\mathcal{H}} }
+\def\bxi{ {\boldsymbol\xi} }
+\def\bzeta{ {\boldsymbol\zeta} }
+%\def\|{{|\!|}}
+\def\ac{{ \,<\!\!<\, }}
+\def\<{{\langle}}
+\def\>{{\rangle}}
+\def\supp{{\mathrm{supp}}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+%\DeclareMathOperator*{\diag}{\textrm{diag}}
+
+\def\Ysim{ {Y_{\textrm{sim}}} }
+\def\Yobs{ {Y_{\textrm{obs}}} }
+\def\Xsim{ {X_{\textrm{sim}}} }
+\def\Xobs{ {X_{\textrm{obs}}} }
+
+\newcommand{\diag}{\operatornamewithlimits{diag}}
+
+\begin{document}
+
+% Input to feed-forward network
+\begin{mymath}
+\textrm{Input: } \vec{x}_0 = x_i = x_{i0}, \,\,\vec{x}_0 \in \R^{N_0}
+\end{mymath}
+
+% Output from feed-forward network
+\begin{mymath}
+\textrm{Output: } \vec{y} = y_j, \,\,\vec{y} \in \R^{M = N_K}
+\end{mymath}
+
+% Hidden Layer k
+% Weight layer
+\begin{mymath}
+\textrm{Weight Layer: } \vec{\xi}_k = \xi_{jk} = \sum_{i=1}^{N_{k-1}} W^k_{ji} x_{i(k-1)} + b^k_j
+\end{mymath}
+
+% Hidden layer
+\begin{mymath}
+  \begin{aligned}
+    \textrm{Hidden Layer: } &\vec{x}_k = x_{jk} = \sigma(\vec{\xi}_k) = \sigma(\xi_{jk}) \\
+    j &= 1, 2, \dots, N_k, \, W^k \in \R^{N_k \times N_{k-1}}
+  \end{aligned}
+\end{mymath}
+
+% Output layer
+\begin{mymath}
+\textrm{Output Layer: } \vec{y} = y_j = \sum_{i=1}^{N_{K-1}} W^K_{ji} x_{i(K-1)} + b^K_j
+\end{mymath}
+
+% Feed-forward error term
+\begin{mymath}
+\textrm{Error: } E(W, b) = \frac{1}{2} \sum_{\lambda=1}^L \| d^{\lambda} - y(x^{\lambda}) \|^2
+\end{mymath}
+
+% Steepest descent equations
+\begin{mymath}
+W^k_{ji} = W^k_{ji} - \alpha \frac{\partial E}{\partial W^k_{ji}}
+\end{mymath}
+
+% Derivative w.r.t. output weights
+\begin{mymath}
+  \frac{\partial E}{\partial W^K_{ji}} = (d_j - y_j) x_{j(K-1)}
+\end{mymath}
+
+% Derivative w.r.t. K-1 weights
+\begin{mymath}
+  \begin{aligned}
+    \frac{\partial E}{\partial W^{K-1}_{ji}} &= \sum_{s=1}^{N_K} \left( \frac{\partial E}{\partial y_s} \frac{\partial y_s}{\partial W^{K-1}_{ji}} \right) = \sum_{s=1}^{N_K} \left[ (d_s - y_s) \sum_{r=1}^{N_{K-1}} \left( \frac{\partial y_s}{\partial x_{r(K-1)}} \frac{\partial x_{r(K-1)}}{\partial W^{K-1}_{ji}} \right) \right] \\
+    &= \sum_{s=1}^{N_K} \left[ (d_s - y_s) W^K_{sj} \sigma'(\xi_{j(K-1)})  \frac{\partial \xi_{j(K-1)}}{\partial W^{K-1}_{ji}} \right] \\
+    &= \sum_{s=1}^{N_K} \left[ (d_s - y_s) W^K_{sj} \sigma'(\xi_{j(K-1)}) x_{i(K-2)} \right]
+  \end{aligned}
+\end{mymath}
+
+% Derivative w.r.t. K-2 weights
+\begin{mymath}
+  \begin{aligned}
+    \frac{\partial E}{\partial W^{K-2}_{ji}} &= \sum_{s=1}^{N_K} \left( \frac{\partial E}{\partial y_s} \frac{\partial y_s}{\partial W^{K-2}_{ji}} \right) = \sum_{s=1}^{N_K} \left[ (d_s - y_s) \sum_{r=1}^{N_{K-1}} \left( \frac{\partial y_s}{\partial x_{r(K-1)}} \frac{\partial x_{r(K-1)}}{\partial W^{K-2}_{ji}} \right) \right] \\
+    &= \sum_{s=1}^{N_K} \left[ (d_s - y_s) \sum_{r=1}^{N_{K-1}} \left( W^K_{sr} \sigma'(\xi_{r(K-1)}) \sum_{t=1}^{N_{K-2}} \frac{\partial \xi_{r(K-1)}}{\partial x_{t(K-2)}} \frac{\partial x_{t(K-2)}}{\partial W^{K-2}_{ji}} \right) \right] \\
+    &= \sum_{s=1}^{N_K} \left[ (d_s - y_s) \sum_{r=1}^{N_{K-1}} \left( W^K_{sr} \sigma'(\xi_{r(K-1)}) W^{K-1}_{rj} \sigma'(\xi_{j(K-2)}) x_{j(K-3)} \right) \right] \\
+  \end{aligned}
+\end{mymath}
+
+% Simple RNN with one hidden layer
+% Input
+\begin{mymath}
+\textrm{Input sequence: } \vec{x}(t) = \vec{x}_0(t) = x_i(t) = x_{i0}(t), \,\,\vec{x}(t) \in \R^N
+\end{mymath}
+
+% Output 
+\begin{mymath}
+\textrm{Output sequence: } \vec{y}(t) = y_j(t), \,\,\vec{y}(t) \in \R^M
+\end{mymath}
+
+% Hidden Layer k
+% Weight layer
+\begin{mymath}
+  \begin{aligned}
+    \textrm{Hidden Layer: } &\xi_j(t) = \sum_{i=1}^N W^h_{ji} x_i(t) + \sum_{i=1}^{N_h} V_{ji} z_i(t-1) + b^h_j \\
+    z_j(t) &= \sigma(\xi_j(t)),\,\, j = 1, 2, \dots, N_h, \,\, z_j(-1) = 0
+  \end{aligned}
+\end{mymath}
+
+% Output layer
+\begin{mymath}
+  \begin{aligned}
+    \textrm{Output Layer: } y_j(t) &= \sum_{i=1}^{N_h} W^o_{ji} z_i(t) + b^o_j \\
+    j &= 1, 2, \dots, M
+  \end{aligned}
+\end{mymath}
+
+% RNN error term
+\begin{mymath}
+  E(W, V, b) = \frac{1}{2} \sum_{t=0}^T \| \vec{d}(t) - \vec{y}(t) \|^2
+\end{mymath}
+
+% Derivative w.r.t. output weights
+\begin{mymath}
+  \frac{\partial E}{\partial W^o_{ji}} = \sum_{r=1}^M \frac{\partial E}{\partial y_r} \frac{\partial y_j}{\partial W^o_{ji}} = (d_j(t) - y_j(t)) z_i(t)
+\end{mymath}
+
+% Derivative truncated at $\tau = 2$ w.r.t. input weights
+\begin{mymath}
+  \begin{aligned}
+    \frac{\partial E}{\partial W^h_{ji}}(t) &= \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \frac{\partial y_r(t)}{\partial W^h_{ji}} = \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \sum_{s=1}^{N_h} \left[ W^o_{rs} \frac{\partial z_s(t)}{\partial W^h_{ji}} \right] \\
+    &= \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \sum_{s=1}^{N_h} \left[ W^o_{rs} \sigma'(\xi_s(t)) \frac{\partial \xi_s(t)}{\partial W^h_{ji}} \right] \\
+    &= \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \sum_{s=1}^{N_h} \left[ W^o_{rs} \sigma'(\xi_s(t)) \left( \delta_{sj} x_i(t) + \sum_{q=1}^{N_h} V_{sq} \frac{\partial z_q(t-1)}{\partial W^h_{ji}} \right) \right] \\
+    &= \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \sum_{s=1}^{N_h} \left[ W^o_{rs} \sigma'(\xi_s(t)) \left[ \delta_{sj} x_i(t) + \sum_{q=1}^{N_h} V_{sq} \sigma'(\xi_q(t-1)) \left( \delta_{qj} x_i(t-1) + \sum_{p=1}^{N_h} V_{qp} \frac{\partial z_p(t-2)}{\partial W^h_{ji}} \right) \right] \right] \\
+    &= \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \sum_{s=1}^{N_h} \left[ W^o_{rs} \sigma'(\xi_s(t)) \left[ \delta_{sj} x_i(t) \right. \right. \\
+    &\,\,\,\,\,\,\,\,\, \left. \left. + \sum_{q=1}^{N_h} V_{sq} \sigma'(\xi_q(t-1)) \left( \delta_{qj} x_i(t-1) + \sum_{p=1}^{N_h} V_{qp} \left[ \sigma'(\xi_p(t-2)) \left( \delta_{pj} x_i(t-2) + 0 \right) \right] \right) \right] \right] \\
+    &= \sum_{r=1}^M \frac{\partial E}{\partial y_r(t)} \sum_{s=1}^{N_h} \left[ W^o_{rs} \sigma'(\xi_s(t)) \left[ \delta_{sj} x_i(t) + \sum_{q=1}^{N_h} V_{sq} \sigma'(\xi_q(t-1)) \left[ \delta_{qj} x_i(t-1) + V_{qj} \sigma'(\xi_j(t-2)) x_i(t-2) \right] \right] \right]
+  \end{aligned}
+\end{mymath}
+
+% Derivative truncated at $\tau = 2$ w.r.t. recurrent weights
+\begin{mymath}
+  \begin{aligned}
+    \frac{\partial E}{\partial V_{ji}}(t) &= \sum_{r=1}^M \frac{\partial E}{\partial y_r} \sum_{s=1}^{N_h} \left[ W^o_{rs} \sigma'(\xi_s(t)) \left( \delta_{sj} z_i(t-1) + V_{sj} \sigma'(\xi_j(t-1)) \left[ \sum_{q=1}^{N_h} W^h_{iq} x_q(t-2) + b^h_i \right] \right) \right]
+  \end{aligned}
+\end{mymath}
+
+
+% LSTM equations, no peepholes
+\begin{mymath}
+  \begin{aligned}
+    f(t) &= \sigma_g ( W_f x(t) + V_f y(t-1) + b_f) \\
+    i(t) &= \sigma_g (W_i x(t) + V_i y(t-1) + b_i) \\
+    o(t) &= \sigma_g (W_o x(t) + V_o y(t-1) + b_o) \\
+    c(t) &= f(t) \odot c(t-1) + i(t) \odot \sigma_c (W_c x(t) + V_c y(t-1) + b_c) \\
+    y(t) &= o(t) \odot \sigma_y (c(t))
+  \end{aligned}
+\end{mymath}
+
+% LSTM equations, with peepholes
+\begin{mymath}
+  \begin{aligned}
+    f(t) &= \sigma_g ( W_f x(t) + V_f c(t-1) + b_f) \\
+    i(t) &= \sigma_g (W_i x(t) + V_i c(t-1) + b_i) \\
+    o(t) &= \sigma_g (W_o x(t) + V_o c(t-1) + b_o) \\
+    c(t) &= f(t) \odot c(t-1) + i(t) \odot \sigma_c (W_c x(t) + V_c c(t-1) + b_c) \\
+    y(t) &= o(t) \odot \sigma_y (c(t))
+  \end{aligned}
+\end{mymath}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
