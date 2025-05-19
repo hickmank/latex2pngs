@@ -9,7 +9,7 @@
 # `convert` is in the `imagemagick` package, `brew install imagemagick`
 
 # Split pdf
-pdfseparate latex_math_equations.pdf %02d.pdf
+pdfseparate RL_math_equations.pdf %02d.pdf
 
 for k in {1..35}
 do

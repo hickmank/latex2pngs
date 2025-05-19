@@ -65,182 +65,173 @@
 
 \begin{document}
 
-% 1. Function
+% 1. Simulation to hydro-field 
 \begin{mymath}
-  f
+  G(y) \mapsto H
 \end{mymath}
 
-% 2. Data
+% 2. Emulator network
 \begin{mymath}
-  g
+  \hat{G}_{\psi}(y) \approx G(y)
 \end{mymath}
 
-% 3. Data pair
+% 3. Simulation training set
 \begin{mymath}
-  (f, g)
+  \{(y^{(i)}, H^{(i)})\}_{i=1}^N
 \end{mymath}
 
-% 4. Forward operator
-\begin{mymath} 
-  \T : X \rightarrow Y
-\end{mymath}
-
-% 4b. Forward operator on functions
-\begin{mymath} 
-  \T : f \mapsto g
-\end{mymath}
-
-% 5. Forward operator data
-\begin{mymath} 
-  g = \T(f_{\textrm{true}}) + \delta g
-\end{mymath}
-
-% 6. Loss function
+% 4. Emulator loss
 \begin{mymath}
-\L : Y \times Y \rightarrow \R
+  L^{\text{G}}(\psi) = \frac{1}{N} \sum_{i=1}^N \text{Error}(\hat{G}_\psi(y^{(i)}), H^{(i)})
 \end{mymath}
 
-% 7. Example loss
+% 5. Geometry vector
 \begin{mymath}
-\L(\T(f), g) = \| \T(f) - g \|^2_2
+  y_t \in \mathbb{R}^n \textrm{ : Input vector at time } t
 \end{mymath}
 
-% 8. Regularizer
+% 6. Emulated density field
 \begin{mymath}
-  \S : X \rightarrow \R
+  H_t = \hat{G}(y_t) \textrm{ : Emulated field}
 \end{mymath}
 
-% 9. Example regularizer
+% 7. Target field
 \begin{mymath}
-  \S(f) = \| f \|_{TV} = \| |\nabla f| \|_1
+  H^* \textrm{ : Target field}
 \end{mymath}
 
-% 10. Minimization problem
+% 8. Action on state space
 \begin{mymath}
-  \min_{f \in X} \left[ \L(\T(f), g) + \lambda \S(f) \right] \textrm{ for a fixed } \lambda \ge 0
+  x_t \textrm{ : Action taken at time } t \textrm{, representing an update to } y_t
 \end{mymath}
 
-% 11. Prior distribution
+% 9. State transition
 \begin{mymath}
-p(f) = \exp\left( -\lambda \S(f) \right)
+  y_{t+1} = y_t + x_t \textrm{ : State transition induced by action}
 \end{mymath}
 
-% 12. Likelihood
+% 10. Reward
 \begin{mymath}
-p(g | f) = \exp\left( -\L(\T(f), g) \right)
+  r_t = -\text{Error}(H_t, H^*) \textrm{ : Reward at time } t
 \end{mymath}
 
-% 13. Posterior distribution
+% 11. Policy network
 \begin{mymath}
-p(f | g) \propto p(g | f) p(f)
+  \pi_\theta(x_t \mid y_t, H_t, H^*)
 \end{mymath}
 
-% 14. Radon transform example
+% 12. Value network
 \begin{mymath}
-  Rf(t, \omega) = \int_{\R} f(t \omega + s \omega^{\perp}) \, ds
+  V_\phi(y_t, H_t, H^*)
 \end{mymath}
 
-% 15. Radon transform inversion
-\begin{mymath}
-  f(x) = \frac{1}{4 \pi^2} \int_0^{\pi} \int_{\R} e^{ir\<x, \omega\>} \widetilde{Rf}(r, \omega) |r| \,dr \,d\omega
-\end{mymath}
+% % 
+% \begin{mymath}
+% \end{mymath}
 
-% 16. Inverse mapping
-\begin{mymath}
-\T^{-1} : g \mapsto f
-\end{mymath}
+% % 
+% \begin{mymath}
+% \end{mymath}
 
-% 17. Sampling manifold
-\begin{mymath}
-f \in \M
-\end{mymath}
+% % 
+% \begin{mymath}
+% \end{mymath}
 
-% 18. Sampling manifold
-\begin{mymath}
-(f, g) \in \M \times \T(\M)
-\end{mymath}
+% % 
+% \begin{mymath}
+% \end{mymath}
 
-% 19. Restricted inverse
-\begin{mymath}
-\T_{\M}^{-1} : g \mapsto f \in \M
-\end{mymath}
+% % 
+% \begin{mymath}
+% \end{mymath}
 
+% % 
+% \begin{mymath}
+% \end{mymath}
 
-% Information theory equations
-% 20. Prior over weights
-\begin{mymath}
-\pi (w) = \textrm{Prior over network weights}
-\end{mymath}
+% The agent learns a policy \( \pi_\theta(x_t \mid y_t, H_t, H^*) \) and a value function \( V_\phi(y_t, H_t, H^*) \).
 
-% 21. Variational posterior over weights
-\begin{mymath}
-Q_{\theta} (w) = \textrm{Variational posterior over network weights}
-\end{mymath}
+% \subsection*{Pretraining (Offline)}
 
-% 22. Likelihood of outputs 
-\begin{mymath}
-P(Y | X, w) = \textrm{Likelihood of output given weights and input}
-\end{mymath}
+% \textbf{Value Function Pretraining:}
 
-% 23. Likelihood of data
-\begin{mymath}
-P(D | w) = P(Y, X | w) = P(Y | X, w) P(X)
-\end{mymath}
+% Given ground-truth data \( \{(y^{(i)}, H^{(i)}, H^{*(i)})\} \), train the value network by minimizing the MSE between its prediction and the immediate reward:
 
-% 24. Information function
-\begin{mymath}
-I(q)(x) = - \log q(x)
-\end{mymath}
+% \[
+% L^{\text{VF}}(\phi) = \frac{1}{N} \sum_{i=1}^N \left( V_\phi(y^{(i)}, H^{(i)}, H^{*(i)}) + \text{Error}(H^{(i)}, H^{*(i)}) \right)^2
+% \]
 
-% 25. Entropy 
-\begin{mymath}
-H(q) = \E_q [I(q)] = - \int [\log q(x)] q(x)\,dx
-\end{mymath}
+% \textbf{Policy Network Pretraining (Optional):}
 
-% 26. Cross-entropy
-\begin{mymath}
-H(p, q) = \E_p[I(q)] = - \int [\log q(x)] p(x)\,dx
-\end{mymath}
+% If action labels \( x^{(i)} \) are available (from simulation or heuristics), use supervised learning:
 
-% 27. KL-divergence
-\begin{mymath}
-D_{KL}(p \| q) = \int \left[ \log \frac{p(x)}{q(x)} \right] p(x)\,dx = H(p, q) - H(p)
-\end{mymath}
+% \[
+% L^{\text{BC}}(\theta) = -\frac{1}{N} \sum_{i=1}^N \log \pi_\theta(x^{(i)} \mid y^{(i)}, H^{(i)}, H^{*(i)})
+% \]
 
-% 28. Derive variational free energy
-\begin{mymath}
-D_{KL}(Q_{\theta}(w) \| P(w | D)) = \int \left[ \log \frac{Q_{\theta}(w)}{P(w | D)} \right] Q_{\theta}(w)\,dw
-\end{mymath}
+% \subsection*{PPO Training Loop (Online)}
 
-% 29. Derive variational free energy
-\begin{mymath}
-= \int \left[ \log \frac{Q_{\theta}(w)P(D)}{P(w, D)} \right] Q_{\theta}(w)\,dw = \int \left[ \log P(D) \right] Q_{\theta}(w)\,dw - \int \left[ \log \frac{P(w, D)}{Q_{\theta}(w)} \right] Q_{\theta}(w)\,dw
-\end{mymath}
-
-% 30. Derive variational free energy
-\begin{mymath}
-= \log P(D) - \int \left[ \log \frac{P(D | w) \pi(w)}{Q_{\theta}(w)} \right] Q_{\theta}(w)\,dw
-\end{mymath}
-
-% 31. Derive variational free energy
-\begin{mymath}
-= \log P(D) - \int \left[ \log P(D | w) \right] Q_{\theta}(w)\,dw - \int \left[ \log \frac{\pi(w)}{Q_{\theta}(w)} \right] Q_{\theta}(w)\,dw
-\end{mymath}
-
-% 32. Derive variational free energy
-\begin{mymath}
-= \log P(D) - \left\{  \E_{Q_{\theta}(w)}[ \log P(D | w) ] - \int \left[ \log \frac{Q_{\theta}(w)}{\pi(w)} \right] Q_{\theta}(w)\,dw \right\}
-\end{mymath}
-
-% 33. Variational free energy
-\begin{mymath}
-V(Q) = \E_{Q_{\theta}(w)}[ \log P(D | w) ] - D_{KL}(Q_{\theta}(w) \| \pi(w))
-\end{mymath}
-
-% 34. Supervised-learning variational free energy
-\begin{mymath}
-V(\theta) = \int [ \log P(Y | X, w) ] Q_{\theta}(w)\,dw - D_{KL}(Q_{\theta}(w) \| \pi(w))
-\end{mymath}
+% \begin{enumerate}
+%     \item \textbf{Collect Rollouts:} For each episode, do:
+%     \begin{align*}
+%         y_0 &\leftarrow \text{initial input} \\
+%         H_0 &\leftarrow G(y_0) \\
+%         \text{for } t = 0 \ldots T: \\
+%         &\quad x_t \sim \pi_\theta(x_t \mid y_t, H_t, H^*) \\
+%         &\quad y_{t+1} = y_t + x_t \\
+%         &\quad H_{t+1} = G(y_{t+1}) \\
+%         &\quad r_t = -\text{Error}(H_t, H^*)
+%     \end{align*}
+    
+%     \item \textbf{Compute Value Estimates and Advantages:}
+    
+%     Let \( V_t = V_\phi(y_t, H_t, H^*) \). Use Generalized Advantage Estimation (GAE):
+    
+%     \[
+%     \delta_t = r_t + \gamma V_{t+1} - V_t
+%     \]
+    
+%     \[
+%     \hat{A}_t = \delta_t + \gamma \lambda \hat{A}_{t+1}
+%     \]
+    
+%     \item \textbf{Compute Returns:}
+    
+%     \[
+%     R_t = \sum_{l=0}^\infty \gamma^l r_{t+l}
+%     \]
+    
+%     \item \textbf{Update Value Network:}
+    
+%     \[
+%     L^{\text{VF}}(\phi) = \frac{1}{T} \sum_{t=0}^{T} \left( V_\phi(y_t, H_t, H^*) - R_t \right)^2
+%     \]
+    
+%     \item \textbf{Update Policy Network (PPO Objective):}
+    
+%     Define the probability ratio:
+    
+%     \[
+%     r_t(\theta) = \frac{\pi_\theta(x_t \mid y_t, H_t, H^*)}{\pi_{\theta_{\text{old}}}(x_t \mid y_t, H_t, H^*)}
+%     \]
+    
+%     The clipped surrogate objective:
+    
+%     \[
+%     L^{\text{CLIP}}(\theta) = \frac{1}{T} \sum_{t=0}^T \min\left(
+%     r_t(\theta) \hat{A}_t,\ 
+%     \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_t
+%     \right)
+%     \]
+    
+%     The policy loss to minimize:
+    
+%     \[
+%     L^{\text{POLICY}}(\theta) = -L^{\text{CLIP}}(\theta)
+%     \]
+    
+%     \item \textbf{Repeat.}
+% \end{enumerate}
 
 
 \end{document}
